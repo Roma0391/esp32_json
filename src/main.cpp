@@ -82,14 +82,18 @@ void handleMessage(uint8_t * payload) {
       OneWire oneWire(pin);
       DallasTemperature sensor(&oneWire);
       sensor.begin();
-      Serial.println("Read temperature");
-      sensor.requestTemperatures();
-      auto tempC = sensor.getTempCByIndex(0);
-      Serial.println(tempC);
-      char msg[MSG_SIZE]; 
-      sprintf(msg, "{\"action\":\"msg\",\"type\":\"temp\",\"body\":%f, \"pin\":%f}",
-        tempC, pin);
-      wsClient.sendTXT(msg);      
+      while (1) {
+        Serial.println("Read temperature");
+        sensor.requestTemperatures();
+        delay(500);
+        auto tempC = sensor.getTempCByIndex(0);
+        Serial.println(tempC);
+        char msg[MSG_SIZE]; 
+        sprintf(msg, "{\"action\":\"msg\",\"type\":\"temp\",\"body\":%f, \"pin\":%f}",
+          tempC, pin);
+        wsClient.sendTXT(msg);    
+        delay(500);
+      }
       return;
     }
     sendErrorMessage("unsupported command type");
